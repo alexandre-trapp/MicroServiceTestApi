@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using MicroServiceTestApi.Models;
 using MicroServiceTestApi.Services;
+using System.Threading.Tasks;
 
 namespace MicroServiceTestApi.Controllers
 {
@@ -36,8 +37,8 @@ namespace MicroServiceTestApi.Controllers
             }
         } 
 
-        [HttpGet("{id:length(24)}", Name = "GetTestApi")]
-        public ActionResult Get(string id)
+        [HttpGet("{id:length(24)}")]
+        public IActionResult Get([FromRoute] string id)
         {
             var api = _apiService.Get(id);
 
@@ -49,17 +50,17 @@ namespace MicroServiceTestApi.Controllers
             return Ok(Utf8Json.JsonSerializer.ToJsonString(api));
         }
 
-        [HttpPost]
-        public ActionResult Create(TestApi api)
+        [HttpPut("{id:length(24)}")]
+        public IActionResult Create([FromRoute] string id, [FromBody] TestApi api)
         {
             _apiService.Create(api);
 
-            var retorno = CreatedAtRoute("Create", new { id = api.Id.ToString() }, api);
-            return Ok("{ mensagem: Item " + api.Id.ToString() + " cadastrado com sucesso. }");
+            var retorno = CreatedAtRoute("GetTestApi", new { id = api.Id.ToString() }, api);
+            return Ok("{ mensagem: Item cadastrado com sucesso. }");
         }
 
-        [HttpPut("{id:length(24)}")]
-        public IActionResult Update(string id, TestApi apiIn)
+        [HttpPost("{id:length(24)}")]
+        public IActionResult Update([FromRoute] string id, [FromBody] TestApi apiIn)
         {
             var api = _apiService.Get(id);
 
@@ -69,11 +70,11 @@ namespace MicroServiceTestApi.Controllers
             }
 
             _apiService.Update(id, apiIn);
-            return Ok("{ mensagem: Item " + id + " atualizado com sucesso. }");
+            return Ok("{ mensagem: Item atualizado com sucesso. }");
         }
 
         [HttpDelete("{id:length(24)}")]
-        public IActionResult Delete(string id)
+        public IActionResult Delete([FromRoute] string id)
         {
             var api = _apiService.Get(id);
 
@@ -84,7 +85,7 @@ namespace MicroServiceTestApi.Controllers
 
             _apiService.Remove(api.Id);
 
-            return Ok("{ mensagem: Item " + id + " removido com sucesso. }");
+            return Ok("{ mensagem: Item removido com sucesso. }");
         }
     }
 }
