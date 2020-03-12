@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using MongoDB.Driver;
 using System.Collections.Generic;
 using MicroServiceTestApi.Models;
@@ -8,10 +9,16 @@ namespace MicroServiceTestApi.Services
     public class TestApiService
     {
         private readonly IMongoCollection<TestApi> _testApi;
-        
+
         public TestApiService(ITestApiDatabaseSettings settings)
         {
-            var client = new MongoClient(settings.ConnectionString);
+            var settingsMongo = new MongoClientSettings
+            {
+                ServerSelectionTimeout = new TimeSpan(0, 0, 10),
+                Server = new MongoServerAddress("localhost", 27017)
+            };
+
+            var client = new MongoClient(settingsMongo);
             var database = client.GetDatabase(settings.DatabaseName);
 
             _testApi = database.GetCollection<TestApi>(settings.TestApiCollectionName);
