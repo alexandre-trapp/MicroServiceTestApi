@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using RestSharp;
 using WeatherDB.Models;
 using WeatherDB.Services;
 
@@ -47,17 +50,8 @@ namespace WeatherDB.Controllers
             return Ok(Utf8Json.JsonSerializer.ToJsonString(api));
         }
 
-        [HttpPut("{id:length(24)}")]
-        public IActionResult Create([FromRoute] string id, [FromBody] Weather api)
-        {
-            _apiService.Create(api);
-
-            //return CreatedAtRoute("Create", new { id = api.Id.ToString() }, api);
-            return Ok("{ mensagem: Item cadastrado com sucesso. }");
-        }
-
         [HttpPost("{id:length(24)}")]
-        public IActionResult Update([FromRoute] string id, [FromBody] Weather apiIn)
+        public IActionResult Update([FromRoute] string id, [FromBody] Weathers apiIn)
         {
             var api = _apiService.Get(id);
 
@@ -70,6 +64,62 @@ namespace WeatherDB.Controllers
             return Ok("{ mensagem: Item atualizado com sucesso. }");
         }
 
+        [HttpPost("{id:length(24)}")]
+        public IActionResult Post([FromRoute] string id, [FromBody] Weathers apiIn)
+        {
+            var api = _apiService.Get(id);
+
+            if (api == null)
+            {
+                return NotFound();
+            }
+
+            _apiService.Create(apiIn);
+            return Ok("{ mensagem: Item criado com sucesso. }");
+        }
+
+        [HttpPost]
+        [Route("search/{city}")]
+        public IActionResult SerchWeatherCityApi([FromRoute] string city)
+        {
+
+            var _apiService = new ConnectWeatherApiService(new RestClient());
+            var response = _apiService.ConsumeWeatherApiService(new string[1] { city });
+            
+            return Ok(JsonConvert.SerializeObject(response));
+        }
+
+        [HttpPost]
+        [Route("search_cities/{cities}")]
+        public async Task<IActionResult> SerchWeatherCitiesApi([FromRoute] string cities)
+        {
+            string[] citiesArr = GetCitiesSplitedWithSeparator(cities);
+            var _apiService = new ConnectWeatherApiService(new RestClient());
+
+            var response = await _apiService.ConsumeWeatherApiService(citiesArr);
+            return ValidateResponseWeather(response);
+        }
+
+        private IActionResult ValidateResponseWeather(ResponseWeather response)
+        {
+            if (response == null)
+                return NoContent();
+
+            if (response.Success)
+                return Ok(JsonConvert.SerializeObject(response));
+            else
+                return BadRequest(JsonConvert.SerializeObject(response));
+        }
+
+        private static string[] GetCitiesSplitedWithSeparator(string cities)
+        {
+            var citiesArr = cities.Split(',');
+            if (citiesArr.Length == 0)
+                citiesArr = cities.Split(';');
+
+            return citiesArr;
+        }
+
         [HttpDelete("{id:length(24)}")]
         public IActionResult Delete([FromRoute] string id)
         {
@@ -80,7 +130,7 @@ namespace WeatherDB.Controllers
                 return NotFound();
             }
 
-            _apiService.Remove(api.Id);
+            _apiService.Remove(api);
 
             return Ok("{ mensagem: Item removido com sucesso. }");
         }
