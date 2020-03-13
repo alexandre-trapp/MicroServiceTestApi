@@ -5,10 +5,10 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using MicroServiceTestApi.Models;
-using MicroServiceTestApi.Services;
+using WeatherDB.Models;
+using WeatherDB.Services;
 
-namespace MicroServiceTestApi
+namespace WeatherDB
 {
     public class Startup
     {
@@ -22,35 +22,30 @@ namespace MicroServiceTestApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<TestApiDatabaseSettings>(
-                Configuration.GetSection(nameof(TestApiDatabaseSettings)));
+            services.Configure<WeatherDatabaseSettings>(
+                Configuration.GetSection(nameof(WeatherDatabaseSettings)));
 
-            services.AddSingleton<ITestApiDatabaseSettings>(sp =>
-                sp.GetRequiredService<IOptions<TestApiDatabaseSettings>>().Value);
+            services.AddSingleton<IWeatherDatabaseSettings>(sp =>
+                sp.GetRequiredService<IOptions<WeatherDatabaseSettings>>().Value);
 
-            services.AddSingleton<TestApiService>();
+            services.AddSingleton<WeatherService>();
 
             services.AddControllers()
                 .AddNewtonsoftJson(options => options.UseMemberCasing());
 
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Weather Api DB Test", Version = "v1" });
             });
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        ///<summary>
+        ///This method gets called by the runtime.Use this method to configure the HTTP request pipeline.
+        ///</summary>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            // Enable middleware to serve generated Swagger as a JSON endpoint.
-            app.UseSwagger();
-
-            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), 
-            // specifying the Swagger JSON endpoint.
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
-            });
+            EnableMiddlewareGenerateToSwaggerAsJsonEndpoint(app);
+            EnableMiddlewareToSwaggerUISpecifyingJsonEndpoint(app);
 
             if (env.IsDevelopment())
             {
@@ -64,6 +59,19 @@ namespace MicroServiceTestApi
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+            });
+        }
+
+        private static void EnableMiddlewareGenerateToSwaggerAsJsonEndpoint(IApplicationBuilder app)
+        {
+            app.UseSwagger();
+        }
+
+        private static void EnableMiddlewareToSwaggerUISpecifyingJsonEndpoint(IApplicationBuilder app)
+        {
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
             });
         }
     }

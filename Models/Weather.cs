@@ -2,10 +2,10 @@
 using Newtonsoft.Json;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace MicroServiceTestApi.Models
+namespace WeatherDB.Models
 {
     [JsonObject("TestApi")]
-    public class TestApi
+    public class Weather
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]

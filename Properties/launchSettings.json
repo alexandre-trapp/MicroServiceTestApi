@@ -12,7 +12,7 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "api/TestApi",
+      "launchUrl": "api/WeatherDB",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
@@ -20,7 +20,7 @@
     "MicroServiceTestApi": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "api/TestApi",
+      "launchUrl": "api/WeatherDB",
       "applicationUrl": "http://localhost:5000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"

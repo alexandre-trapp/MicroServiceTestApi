@@ -1,19 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
-using MicroServiceTestApi.Models;
-using MicroServiceTestApi.Services;
-using System.Threading.Tasks;
+using WeatherDB.Models;
+using WeatherDB.Services;
 
-namespace MicroServiceTestApi.Controllers
+namespace WeatherDB.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TestApiController : ControllerBase
+    public class WeatherController : ControllerBase
     {
-        private readonly TestApiService _apiService;
+        private readonly WeatherService _apiService;
 
-        public TestApiController(TestApiService apiService)
+        public WeatherController(WeatherService apiService)
         {
             _apiService = apiService;
         }
@@ -25,7 +23,6 @@ namespace MicroServiceTestApi.Controllers
             {
                 var retorno = _apiService.Get();
                 return Ok(Utf8Json.JsonSerializer.ToJsonString(retorno));
-                
             }
             catch (TimeoutException e)
             {
@@ -51,16 +48,16 @@ namespace MicroServiceTestApi.Controllers
         }
 
         [HttpPut("{id:length(24)}")]
-        public IActionResult Create([FromRoute] string id, [FromBody] TestApi api)
+        public IActionResult Create([FromRoute] string id, [FromBody] Weather api)
         {
             _apiService.Create(api);
 
-            var retorno = CreatedAtRoute("GetTestApi", new { id = api.Id.ToString() }, api);
+            //return CreatedAtRoute("Create", new { id = api.Id.ToString() }, api);
             return Ok("{ mensagem: Item cadastrado com sucesso. }");
         }
 
         [HttpPost("{id:length(24)}")]
-        public IActionResult Update([FromRoute] string id, [FromBody] TestApi apiIn)
+        public IActionResult Update([FromRoute] string id, [FromBody] Weather apiIn)
         {
             var api = _apiService.Get(id);
 
