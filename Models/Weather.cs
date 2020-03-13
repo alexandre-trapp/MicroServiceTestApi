@@ -1,28 +1,32 @@
 ﻿using MongoDB.Bson;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace WeatherDB.Models
 {
-    [JsonObject("TestApi")]
+    [JsonObject("Weather")]
     public class Weather
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
-        [JsonProperty("Id")]
+        [JsonProperty("id")]
         public string Id { get; set; }
 
-        [BsonElement("Name")]
-        [JsonProperty("Name")]
-        public string BookName { get; set; }
+        [BsonElement("name")]
+        [JsonProperty("name")]
+        public string Name { get; set; }
 
-        [JsonProperty("Price")]
-        public decimal Price { get; set; }
+        [BsonElement("state")]
+        [JsonProperty("state")]
+        public string State { get; set; }
 
-        [JsonProperty("Category")]
-        public string Category { get; set; }
+        [BsonElement("country")]
+        [JsonProperty("country")]
+        public string Country { get; set; }
 
-        [JsonProperty("Author")]
-        public string Author { get; set; }
+        [BsonElement("coord")]
+        [JsonProperty("coord")]
+        public List<Coordinates> LocalizationCoordenates { get; set; } 
     }
 }
