@@ -80,13 +80,13 @@ namespace WeatherDB.Controllers
 
         [HttpPost]
         [Route("search/{city}")]
-        public IActionResult SerchWeatherCityApi([FromRoute] string city)
+        public async Task<IActionResult> SerchWeatherCityApi([FromRoute] string city)
         {
 
-            var _apiService = new ConnectWeatherApiService(new RestClient());
-            var response = _apiService.ConsumeWeatherApiService(new string[1] { city });
-            
-            return Ok(JsonConvert.SerializeObject(response));
+            var _apiWeather = new ConnectWeatherApiService(new RestClient());
+            var response = await _apiWeather.ConsumeWeatherApiService(new string[1] { city });
+
+            return Ok();
         }
 
         [HttpPost]
@@ -97,18 +97,27 @@ namespace WeatherDB.Controllers
             var _apiService = new ConnectWeatherApiService(new RestClient());
 
             var response = await _apiService.ConsumeWeatherApiService(citiesArr);
-            return ValidateResponseWeather(response);
+            return ProcessResponseWeather(response);
         }
 
-        private IActionResult ValidateResponseWeather(ResponseWeather response)
+        private IActionResult ProcessResponseWeather(ResponseWeather response)
         {
             if (response == null)
                 return NoContent();
 
             if (response.Success)
+            {
+                CreateWeathersInDB(response);
                 return Ok(JsonConvert.SerializeObject(response));
+            }
             else
                 return BadRequest(JsonConvert.SerializeObject(response));
+        }
+
+        private void CreateWeathersInDB(ResponseWeather response)
+        {
+            response.WeathersList.ForEach(weather =>
+                    _apiService.Create(weather));
         }
 
         private static string[] GetCitiesSplitedWithSeparator(string cities)
