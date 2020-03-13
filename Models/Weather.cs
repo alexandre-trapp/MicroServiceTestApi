@@ -25,8 +25,12 @@ namespace WeatherDB.Models
         [JsonProperty("country")]
         public string Country { get; set; }
 
-        [BsonElement("coord")]
-        [JsonProperty("coord")]
-        public List<Coordinates> LocalizationCoordenates { get; set; } 
+        [BsonElement("lat")]
+        [JsonProperty("lat")]
+        public double Latitude { get; set; }
+
+        [BsonElement("lon")]
+        [JsonProperty("lon")]
+        public double Longitude { get; set; }
     }
 }
