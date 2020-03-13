@@ -13,6 +13,10 @@ namespace WeatherDB.Models
         [JsonProperty("id")]
         public string Id { get; set; }
 
+        [BsonElement("cityId")]
+        [JsonProperty("cityId")]
+        public string CityId { get; set; }
+
         [BsonElement("name")]
         [JsonProperty("name")]
         public string Name { get; set; }
