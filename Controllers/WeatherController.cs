@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -64,7 +65,7 @@ namespace WeatherDB.Controllers
             return Ok("{ mensagem: Item atualizado com sucesso. }");
         }
 
-        [HttpPost("{id:length(24)}")]
+        [HttpPut("{id:length(24)}")]
         public IActionResult Post([FromRoute] string id, [FromBody] Weathers apiIn)
         {
             var api = _apiService.Get(id);
@@ -86,7 +87,7 @@ namespace WeatherDB.Controllers
             var _apiWeather = new ConnectWeatherApiService(new RestClient());
             var response = await _apiWeather.ConsumeWeatherApiService(new string[1] { city });
 
-            return Ok();
+            return Ok(JsonConvert.SerializeObject(response));
         }
 
         [HttpPost]
@@ -102,22 +103,35 @@ namespace WeatherDB.Controllers
 
         private IActionResult ProcessResponseWeather(ResponseWeather response)
         {
-            if (response == null)
+            if (response == null || response.WeathersList == null || !response.WeathersList.Any())
                 return NoContent();
 
             if (response.Success)
             {
-                CreateWeathersInDB(response);
+                int qtdCreates = CreateWeathersInDB(response);
+                response.MessageResponse += Environment.NewLine +
+                                            $"{qtdCreates} weathers created in db from {response.WeathersList.Count} weathers returned from api";
+
                 return Ok(JsonConvert.SerializeObject(response));
             }
             else
                 return BadRequest(JsonConvert.SerializeObject(response));
         }
 
-        private void CreateWeathersInDB(ResponseWeather response)
+        private int CreateWeathersInDB(ResponseWeather response)
         {
-            response.WeathersList.ForEach(weather =>
-                    _apiService.Create(weather));
+            int qtdCreates = 0;
+
+            foreach(var weather in response.WeathersList)
+            {
+                if (weather != null)
+                {
+                    _apiService.Create(weather);
+                    qtdCreates++;
+                }
+            }
+
+            return qtdCreates;
         }
 
         private static string[] GetCitiesSplitedWithSeparator(string cities)
