@@ -7,7 +7,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace WeatherDB.Models
 {
-    public class Weathers
+    public class WeathersList
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
@@ -32,6 +32,9 @@ namespace WeatherDB.Models
         [BsonElement("city")]
         [JsonProperty("city")]
         public Cities City { get; set; }
+
+        [JsonProperty("messageResponse")]
+        public string MessageResponse { get; set; }
     }
 
     public class ListWeathers

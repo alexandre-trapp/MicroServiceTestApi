@@ -7,32 +7,32 @@ namespace WeatherDB.Services
 {
     public class WeatherService : IWeatherService
     {
-        private readonly IMongoCollection<Weathers> WeathersColl;
+        private readonly IMongoCollection<WeathersList> WeathersColl;
 
         public WeatherService(IWeatherDatabaseSettings settings)
         {
             var client = new MongoClient(settings.ConnectionString);
             var database = client.GetDatabase(settings.DatabaseName);
 
-            WeathersColl = database.GetCollection<Weathers>(settings.WeatherCollectionName);
+            WeathersColl = database.GetCollection<WeathersList>(settings.WeatherCollectionName);
         }
 
-        public List<Weathers> Get() =>
+        public List<WeathersList> Get() =>
             WeathersColl.Find(x => true).ToList();
 
-        public List<Weathers> GetWeathersCity(string cityCode) =>
-            WeathersColl.Find<Weathers>(apiTest => apiTest.City.id == cityCode).ToList();
+        public List<WeathersList> GetWeathersCity(string cityCode) =>
+            WeathersColl.Find<WeathersList>(apiTest => apiTest.City.id == cityCode).ToList();
 
-        public Weathers Create(Weathers apiTest)
+        public WeathersList Create(WeathersList apiTest)
         {
             WeathersColl.InsertOne(apiTest);
             return apiTest;
         }
 
-        public void Update(string id, Weathers apiTestIn) =>
+        public void Update(string id, WeathersList apiTestIn) =>
             WeathersColl.ReplaceOne(apiTest => apiTest._Id == id, apiTestIn);
 
-        public void Remove(Weathers apiTestIn) =>
+        public void Remove(WeathersList apiTestIn) =>
             WeathersColl.DeleteOne(apiTest => apiTest._Id == apiTestIn._Id);
 
         public void Remove(string id) =>

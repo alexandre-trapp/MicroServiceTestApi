@@ -16,12 +16,12 @@ namespace WeatherDB.Services
             _restClient = restClient ?? throw new ArgumentNullException(nameof(restClient));
         }
 
-        public async Task<ResponseWeather> ConsumeWeatherApiService(string[] cities)
+        public async Task<WeathersList> ConsumeWeatherApiService(string[] cities)
         {
             if (!ValidRequest(cities))
                 return RequesIsNotValid();
 
-            var responseWeather = new ResponseWeather();
+            var weathersList = new WeathersList();
 
             var sbLog = new StringBuilder();
 
@@ -42,14 +42,14 @@ namespace WeatherDB.Services
                 if (string.IsNullOrEmpty(resp.Content) || resp.Content == null)
                     sbLog.AppendLine($"Content is empty - statusCode: {resp.StatusCode}, message: {resp.ErrorMessage}; Request idCity: {city}");
                 else
-                    responseWeather = JsonConvert.DeserializeObject<ResponseWeather>(resp.Content);
+                    weathersList = JsonConvert.DeserializeObject<WeathersList>(resp.Content);
             }
 
-            SetHesponseHeadersCustom(responseWeather, sbLog);
-            return responseWeather;
+            SetHesponseHeadersCustom(weathersList, sbLog);
+            return weathersList;
         }
 
-        private static void SetHesponseHeadersCustom(ResponseWeather responseList, StringBuilder sbLog)
+        private static void SetHesponseHeadersCustom(WeathersList responseList, StringBuilder sbLog)
         {
             bool logIsNull = string.IsNullOrEmpty(sbLog.ToString());
             responseList.MessageResponse = (logIsNull ? "Success" : sbLog.ToString());
@@ -60,9 +60,9 @@ namespace WeatherDB.Services
             return cities != null && cities.Length > 0;
         }
 
-        private ResponseWeather RequesIsNotValid()
+        private WeathersList RequesIsNotValid()
         {
-            return new ResponseWeather
+            return new WeathersList
             {
                 MessageResponse = "não informado cidades válidas no request"
             };

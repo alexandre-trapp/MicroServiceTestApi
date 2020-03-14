@@ -5,10 +5,10 @@ namespace WeatherDB.Services
 {
     public interface IWeatherService
     {
-        List<Weathers> GetWeathersCity(string cityCode);
-        Weathers Create(Weathers apiTest);
-        void Update(string id, Weathers apiTestIn);
-        void Remove(Weathers apiTestIn);
+        List<WeathersList> GetWeathersCity(string cityCode);
+        WeathersList Create(WeathersList apiTest);
+        void Update(string id, WeathersList apiTestIn);
+        void Remove(WeathersList apiTestIn);
         void Remove(string id);
     }
 }

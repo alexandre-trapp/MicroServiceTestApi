@@ -58,7 +58,7 @@ namespace WeatherDB.Controllers
             var _apiWeather = new ConnectWeatherApiService(new RestClient());
             var response = await _apiWeather.ConsumeWeatherApiService(new string[1] { city });
 
-            return ProcessResponseWeather(response);
+            return ProcessWeathersList(response);
         }
 
         [HttpPost]
@@ -69,40 +69,23 @@ namespace WeatherDB.Controllers
             var _apiService = new ConnectWeatherApiService(new RestClient());
 
             var response = await _apiService.ConsumeWeatherApiService(citiesArr);
-            return ProcessResponseWeather(response);
+            return ProcessWeathersList(response);
         }
 
-        private IActionResult ProcessResponseWeather(ResponseWeather response)
+        private IActionResult ProcessWeathersList(WeathersList response)
         {
-            if (response == null || response.WeathersList == null || !response.WeathersList.Any())
+            if (response == null || response.List == null)
                 return NotFound(JsonConvert.SerializeObject(response));
 
             if ("Success".Equals(response.MessageResponse))
             {
-                int qtdCreates = CreateWeathersInDB(response);
-                response.MessageResponse += Environment.NewLine +
-                                            $"{qtdCreates} weathers created in db from {response.WeathersList.Count} weathers returned from api";
+                _apiService.Create(response);
+                response.MessageResponse += $"weathers created in db from weathers returned from api";
 
                 return Ok(JsonConvert.SerializeObject(response));
             }
             else
                 return BadRequest(JsonConvert.SerializeObject(response));
-        }
-
-        private int CreateWeathersInDB(ResponseWeather response)
-        {
-            int qtdCreates = 0;
-
-            foreach(var weather in response.WeathersList)
-            {
-                if (weather != null)
-                {
-                    _apiService.Create(weather);
-                    qtdCreates++;
-                }
-            }
-
-            return qtdCreates;
         }
 
         private static string[] GetCitiesSplitedWithSeparator(string cities)
