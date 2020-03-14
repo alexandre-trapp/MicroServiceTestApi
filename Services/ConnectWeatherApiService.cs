@@ -27,13 +27,16 @@ namespace WeatherDB.Services
 
             foreach (var city in cities)
             {
-                _restClient.BaseUrl = new Uri($"http://api.openweathermap.org/data/2.5/forecast?id={city}");
+                _restClient.BaseUrl = new Uri($"http://localhost:56297/api/WeatherForecast/{city}");
                 var request = new RestRequest(Method.GET);
 
                 var resp = await _restClient.ExecuteGetAsync<IRestResponse>(request);
 
                 if (resp == null)
+                {
+                    sbLog.AppendLine($"error: response is null; Request idCity: {city}");
                     continue;
+                };
 
                 Console.WriteLine(resp.Content);
                 if (string.IsNullOrEmpty(resp.Content))
@@ -43,10 +46,15 @@ namespace WeatherDB.Services
                 responseList.WeathersList.Add(weather);
             }
 
-            responseList.MessageResponse = (string.IsNullOrEmpty(sbLog.ToString()) ? "Success" : sbLog.ToString());
-            responseList.Success = true;
-
+            SetHesponseHeadersCustom(responseList, sbLog);
             return responseList;
+        }
+
+        private static void SetHesponseHeadersCustom(ResponseWeather responseList, StringBuilder sbLog)
+        {
+            bool logIsNull = string.IsNullOrEmpty(sbLog.ToString());
+            responseList.MessageResponse = (logIsNull ? "Success" : sbLog.ToString());
+            responseList.Success = logIsNull || !sbLog.ToString().Contains("error");
         }
 
         private bool ValidRequest(string[] cities)

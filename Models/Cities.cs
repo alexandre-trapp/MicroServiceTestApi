@@ -41,12 +41,16 @@ namespace WeatherDB.Models
         [JsonProperty("sunset")]
         public long Sunset { get; set; }
 
-        public CoordinatesLocalization Coord { get; set; }
+        public Coordinates Coord { get; set; }
     }
 
-    [JsonObject("coord")]
-    public class CoordinatesLocalization
+    public class Coordinates
     {
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        [JsonProperty("_id")]
+        public string _Id { get; set; }
+
         [BsonElement("lat")]
         [JsonProperty("lat")]
         public double Lat { get; set; }
