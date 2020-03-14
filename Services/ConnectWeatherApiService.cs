@@ -42,8 +42,7 @@ namespace WeatherDB.Services
                 if (string.IsNullOrEmpty(resp.Content))
                     sbLog.AppendLine($"Content is empty; Request idCity: {city}");
 
-                var weather = JsonConvert.DeserializeObject<Weathers>(resp.Content);
-                responseList.WeathersList.Add(weather);
+                responseList = JsonConvert.DeserializeObject<ResponseWeather>(resp.Content);
             }
 
             SetHesponseHeadersCustom(responseList, sbLog);

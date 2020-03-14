@@ -38,10 +38,10 @@ namespace WeatherDB.Controllers
             }
         } 
 
-        [HttpGet("{id:length(24)}")]
-        public IActionResult Get([FromRoute] string id)
+        [HttpGet("{cityCode:length(24)}")]
+        public IActionResult Get([FromRoute] string cityCode)
         {
-            var api = _apiService.Get(id);
+            var api = _apiService.GetWeathersCity(cityCode);
 
             if (api == null)
             {
@@ -51,43 +51,14 @@ namespace WeatherDB.Controllers
             return Ok(Utf8Json.JsonSerializer.ToJsonString(api));
         }
 
-        [HttpPost("{id:length(24)}")]
-        public IActionResult Update([FromRoute] string id, [FromBody] Weathers apiIn)
-        {
-            var api = _apiService.Get(id);
-
-            if (api == null)
-            {
-                return NotFound();
-            }
-
-            _apiService.Update(id, apiIn);
-            return Ok("{ mensagem: Item atualizado com sucesso. }");
-        }
-
-        [HttpPut("{id:length(24)}")]
-        public IActionResult Post([FromRoute] string id, [FromBody] Weathers apiIn)
-        {
-            var api = _apiService.Get(id);
-
-            if (api == null)
-            {
-                return NotFound();
-            }
-
-            _apiService.Create(apiIn);
-            return Ok("{ mensagem: Item criado com sucesso. }");
-        }
-
         [HttpPost]
         [Route("search/{city}")]
         public async Task<IActionResult> SerchWeatherCityApi([FromRoute] string city)
         {
-
             var _apiWeather = new ConnectWeatherApiService(new RestClient());
             var response = await _apiWeather.ConsumeWeatherApiService(new string[1] { city });
 
-            return Ok(JsonConvert.SerializeObject(response));
+            return ProcessResponseWeather(response);
         }
 
         [HttpPost]
@@ -141,21 +112,6 @@ namespace WeatherDB.Controllers
                 citiesArr = cities.Split(';');
 
             return citiesArr;
-        }
-
-        [HttpDelete("{id:length(24)}")]
-        public IActionResult Delete([FromRoute] string id)
-        {
-            var api = _apiService.Get(id);
-
-            if (api == null)
-            {
-                return NotFound();
-            }
-
-            _apiService.Remove(api);
-
-            return Ok("{ mensagem: Item removido com sucesso. }");
         }
     }
 }

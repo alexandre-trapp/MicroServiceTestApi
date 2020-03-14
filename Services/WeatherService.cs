@@ -20,8 +20,8 @@ namespace WeatherDB.Services
         public List<Weathers> Get() =>
             WeathersColl.Find(x => true).ToList();
 
-        public Weathers Get(string id) =>
-            WeathersColl.Find<Weathers>(apiTest => apiTest._Id == id).FirstOrDefault();
+        public List<Weathers> GetWeathersCity(string cityCode) =>
+            WeathersColl.Find<Weathers>(apiTest => apiTest.City.id == cityCode).ToList();
 
         public Weathers Create(Weathers apiTest)
         {
