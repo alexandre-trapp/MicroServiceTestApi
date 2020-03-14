@@ -75,9 +75,9 @@ namespace WeatherDB.Controllers
         private IActionResult ProcessResponseWeather(ResponseWeather response)
         {
             if (response == null || response.WeathersList == null || !response.WeathersList.Any())
-                return NoContent();
+                return NotFound(JsonConvert.SerializeObject(response));
 
-            if (response.Success)
+            if ("Success".Equals(response.MessageResponse))
             {
                 int qtdCreates = CreateWeathersInDB(response);
                 response.MessageResponse += Environment.NewLine +

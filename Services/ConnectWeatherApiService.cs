@@ -21,7 +21,7 @@ namespace WeatherDB.Services
             if (!ValidRequest(cities))
                 return RequesIsNotValid();
 
-            var responseList = new ResponseWeather();
+            var responseWeather = new ResponseWeather();
 
             var sbLog = new StringBuilder();
 
@@ -39,21 +39,20 @@ namespace WeatherDB.Services
                 };
 
                 Console.WriteLine(resp.Content);
-                if (string.IsNullOrEmpty(resp.Content))
-                    sbLog.AppendLine($"Content is empty; Request idCity: {city}");
-
-                responseList = JsonConvert.DeserializeObject<ResponseWeather>(resp.Content);
+                if (string.IsNullOrEmpty(resp.Content) || resp.Content == null)
+                    sbLog.AppendLine($"Content is empty - statusCode: {resp.StatusCode}, message: {resp.ErrorMessage}; Request idCity: {city}");
+                else
+                    responseWeather = JsonConvert.DeserializeObject<ResponseWeather>(resp.Content);
             }
 
-            SetHesponseHeadersCustom(responseList, sbLog);
-            return responseList;
+            SetHesponseHeadersCustom(responseWeather, sbLog);
+            return responseWeather;
         }
 
         private static void SetHesponseHeadersCustom(ResponseWeather responseList, StringBuilder sbLog)
         {
             bool logIsNull = string.IsNullOrEmpty(sbLog.ToString());
             responseList.MessageResponse = (logIsNull ? "Success" : sbLog.ToString());
-            responseList.Success = logIsNull || !sbLog.ToString().Contains("error");
         }
 
         private bool ValidRequest(string[] cities)
@@ -65,8 +64,7 @@ namespace WeatherDB.Services
         {
             return new ResponseWeather
             {
-                MessageResponse = "não informado cidades válidas no request",
-                Success = false
+                MessageResponse = "não informado cidades válidas no request"
             };
         }
     }

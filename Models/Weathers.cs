@@ -11,7 +11,6 @@ namespace WeatherDB.Models
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
-        [JsonProperty("_id")]
         public string _Id { get; set; }
 
         [BsonElement("cod")]

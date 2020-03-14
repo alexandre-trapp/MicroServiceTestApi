@@ -12,8 +12,5 @@ namespace WeatherDB.Services
 
         [JsonProperty("messageResponse")]
         public string MessageResponse { get; set; }
-
-        [JsonProperty("success")]
-        public bool Success { get; set; }
     }
 }

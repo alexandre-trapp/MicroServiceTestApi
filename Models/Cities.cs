@@ -11,7 +11,6 @@ namespace WeatherDB.Models
         /// </summary>
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
-        [JsonProperty("_id")]
         public string _Id { get; set; }
 
         /// <summary>
@@ -48,7 +47,6 @@ namespace WeatherDB.Models
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
-        [JsonProperty("_id")]
         public string _Id { get; set; }
 
         [BsonElement("lat")]
